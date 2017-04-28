@@ -41,13 +41,13 @@ def main():
     dt = 0.01
     setpoint = -5
     plotter.add_marker((0, 0, -setpoint))
-    for i in range(1000):
+    while plotter.show_step():
         quad.step(dt)
         P_controller(quad, setpoint=setpoint)
         #lift_controller(quad)
         #yaw_controller(quad)
         plotter.update(quad.position, quad.rpy)
-        plotter.show_step()
+
 
 
 if __name__ == '__main__':
