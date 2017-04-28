@@ -66,6 +66,13 @@ class QuadPlotter(object):
                                       width=3)
         self.w.addItem(self.quad)
 
+    def add_marker(self, pos):
+        points = np.array([pos])
+        p = gl.GLScatterPlotItem(pos=points,
+                                 color=np.array((1, 0, 0)), size=0.1,
+                                 pxMode=False)
+        self.w.addItem(p)
+
     def update(self, pos, rpy):
         """
         Set the new position and rotation of the quadcopter: ``pos`` is a tuple

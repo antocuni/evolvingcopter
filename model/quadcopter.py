@@ -35,7 +35,7 @@ class Quadcopter(object):
         return RPY(self.qr.phi, self.qr.theta, self.qr.psi)
 
     def set_thrust(self, a1, a2, a3, a4):
-        self.qr.a1 = a1
-        self.qr.a2 = a2
-        self.qr.a3 = a3
-        self.qr.a4 = a4
+        self.qr.a1 = max(0, a1)
+        self.qr.a2 = max(0, a2)
+        self.qr.a3 = max(0, a3)
+        self.qr.a4 = max(0, a4)
