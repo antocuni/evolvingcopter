@@ -22,7 +22,7 @@ class TestQuadcopter(object):
     def test_lift(self):
         quad = Quadcopter()
         assert quad.position == (0, 0, 0)
-        assert quad.ypr == (0, 0, 0)
+        assert quad.rpy == (0, 0, 0)
         #
         # power all the motors, to lift the quad vertically
         quad.set_thrust(10, 10, 10, 10)
@@ -32,21 +32,21 @@ class TestQuadcopter(object):
         assert pos.x == 0
         assert pos.y == 0
         assert pos.z < 0 # check that the quad lifted a bit
-        assert quad.ypr == (0, 0, 0)
+        assert quad.rpy == (0, 0, 0)
 
     def test_Quadcopter_yaw(self):
         quad = Quadcopter()
         # only two motors on, to produce a yaw
         quad.set_thrust(0, 10, 0, 10)
         quad.run(t=1)
-        assert quad.ypr.yaw > 0
-        assert quad.ypr.pitch == 0
-        assert quad.ypr.roll == 0
+        assert quad.rpy.yaw > 0
+        assert quad.rpy.pitch == 0
+        assert quad.rpy.roll == 0
         #
         # now try to yaw in the opposite direction
         quad.reset()
         quad.set_thrust(10, 0, 10, 0)
         quad.run(t=1)
-        assert quad.ypr.yaw < 0
-        assert quad.ypr.pitch == 0
-        assert quad.ypr.roll == 0
+        assert quad.rpy.yaw < 0
+        assert quad.rpy.pitch == 0
+        assert quad.rpy.roll == 0

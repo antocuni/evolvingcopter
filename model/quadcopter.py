@@ -2,7 +2,7 @@ from collections import namedtuple
 from model import _qrmod
 
 Point = namedtuple('Point', ['x', 'y', 'z'])
-YPR = namedtuple('YPR', ['yaw', 'pitch', 'roll'])
+RPY = namedtuple('RPY', ['roll', 'pitch', 'yaw'])
 
 class Quadcopter(object):
 
@@ -31,8 +31,8 @@ class Quadcopter(object):
         return Point(self.qr.x, self.qr.y, self.qr.z)
 
     @property
-    def ypr(self):
-        return YPR(self.qr.psi, self.qr.theta, self.qr.phi)
+    def rpy(self):
+        return RPY(self.qr.phi, self.qr.theta, self.qr.psi)
 
     def set_thrust(self, a1, a2, a3, a4):
         self.qr.a1 = a1
