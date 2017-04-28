@@ -10,7 +10,19 @@ ffibuilder.set_source(
 
 ffibuilder.cdef("""
     typedef struct {
-        double t;
+        double t;       /* simulation time */
+        double phi;     /* roll angle (Euler angle x) */
+        double theta;   /* pitch angle (Euler angle y) */
+        double psi;     /* yaw angle (Euler angle z) */
+        double x;       /* position coordinate (earth axis x) */
+        double y;       /* position coordinate (earth axis y) */
+        double z;       /* position coordinate (earth axis z) */
+
+        double a1;      /* rotor 1 control */
+        double a2;      /* rotor 2 control */
+        double a3;      /* rotor 3 control */
+        double a4;      /* rotor 4 control */
+
         ...;
     } qrstate_t;
 
