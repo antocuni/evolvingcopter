@@ -127,9 +127,23 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
 
 	/* quad rotor constants (SI units)
 	 */
-	b = 1.0;
+
+    /*
+      antocuni's notes, reading this pdf:
+      https://www.slideshare.net/PabloGarciaAu/control-of-a-quadcopter
+
+      section 2.2.3, propulsive moments:
+
+        "d is the distance from the center of the propeller to the center of
+        gravity": this is the *b* variable
+
+        d[N] is a fictitious distance which represents the aerodynamic
+        reaction of the propellers due to the draft of the blades: this is the
+        *d* variable
+    */
+	b = 1.0;  // distance from the center of propeller to center of quad
 	d = 10.0; // 10*b: avoid lots of Z thrust when yawing
-	m = 1.0;
+	m = 1.0;  // mass
 	Ix = Iy = 1.0;
 	Iz = 2.0;
 	Izx = 0.0;
