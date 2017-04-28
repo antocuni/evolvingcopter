@@ -1,88 +1,100 @@
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.colors import cnames
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+from pyqtgraph.Qt import QtCore, QtGui
+import pyqtgraph.opengl as gl
+import pyqtgraph as pg
 import numpy as np
-import sys
-
-ARM_LENGTH = 0.086 # meter
-HEIGHT = 0.1
-L = ARM_LENGTH
-H = HEIGHT
-BODY_FRAME = np.array([(L, 0, 0, 1),
-                       (0, L, 0, 1),
-                       (-L, 0, 0, 1),
-                       (0, -L, 0, 1),
-                       (0, 0, 0, 1),
-                       (0, 0, H, 1)])
-
 
 class QuadPlotter(object):
 
-    def __init__(self):
-        self.fig = plt.figure()
-        ax = self.fig.add_axes([0, 0, 1, 1], projection='3d')
-        ax.plot([], [], [], '-', c='cyan')[0]
-        ax.plot([], [], [], '-', c='red')[0]
-        ax.plot([], [], [], '-', c='blue', marker='o', markevery=2)[0]
-        self.set_limit((-0.5,0.5), (-0.5,0.5), (-0.5,5))
+    def __init__(self, title='Quadcopter', arm_length=2):
+        self.arm_length = arm_length
+        self.app = QtGui.QApplication([])
+        self.w = gl.GLViewWidget()
+        self.w.opts['distance'] = 40
+        self.w.setWindowTitle(title)
+        self._make_grid()
+        self._make_quad()
+        self.w.show()
+        N = 3
+        self.w.resize(640*N, 480*N)
+        self.w.move(0, 0)
 
-    def set_limit(self, x, y, z):
-        ax = plt.gca()
-        ax.set_xlim(x)
-        ax.set_ylim(y)
-        ax.set_zlim(z)
+    def _make_grid(self):
+        # make the grid
+        gx = gl.GLGridItem()
+        gx.rotate(90, 0, 1, 0)
+        gx.translate(-10, 0, 0)
+        self.w.addItem(gx)
+        gy = gl.GLGridItem()
+        gy.rotate(90, 1, 0, 0)
+        gy.translate(0, -10, 0)
+        self.w.addItem(gy)
+        gz = gl.GLGridItem()
+        gz.translate(0, 0, -10)
+        self.w.addItem(gz)
+        #
+        # make the axes
+        ax = gl.GLAxisItem()
+        ax.setSize(100, 100, 100)
+        self.w.addItem(ax)
 
-    def plot_animation(self, get_world_frame):
+    def _make_quad(self):
+        red = (1, 0, 0)
+        cyan = (0, 1, 1)
+        yellow = (1, 1, 0)
+        green = (0, 1, 0)
+        #
+        L = self.arm_length
+        H = L/8.0
+        lines = [
+            # from            to             color
+            ([  -L,  0,  0], [-L+H,  0,  0], red),    # indicate the norh
+            ([-L+H,  0,  0], [   L,  0,  0], cyan),   # north-south arm
+            ([   0, -L,  0], [   0,  L,  0], yellow), # west-east arm
+            ([   0,  0,  0], [   0,  0,  H], green),
+        ]
+        points = []
+        colors = []
+        for a, b, color in lines:
+            points.append(a)
+            points.append(b)
+            colors.append(color)
+            colors.append(color)
+        #
+        self.quad = gl.GLLinePlotItem(pos=np.array(points),
+                                      color=np.array(colors),
+                                      mode='lines',
+                                      width=3)
+        self.w.addItem(self.quad)
+
+    def update(self, pos, rpy):
         """
-        get_world_frame is a function which return the "next" world frame to be
-        drawn
+        Set the new position and rotation of the quadcopter: ``pos`` is a tuple
+        (x, y, z), and rpy is a tuple (roll, pitch, yaw) expressed in
+        *radians*
         """
-        def anim_callback(i):
-            frame = get_world_frame(i)
-            self.set_frame(frame)
+        self.quad.resetTransform()
+        x, y, z = pos
+        self.quad.translate(x, y, -z) # invert the z axis
+        roll, pitch, yaw = np.rad2deg(rpy)
+        self.quad.rotate(roll, 1, 0, 0, local=True)
+        self.quad.rotate(pitch, 0, 1, 0, local=True)
+        self.quad.rotate(yaw, 0, 0, 1, local=True)
 
-        an = animation.FuncAnimation(self.fig,
-                                     anim_callback,
-                                     init_func=None,
-                                     frames=400, interval=10, blit=False)
-        if len(sys.argv) > 1 and sys.argv[1] == 'save':
-            an.save('sim.gif', dpi=80, writer='imagemagick', fps=60)
-        else:
-            plt.show(block=False)
+    def show_step(self, dt=0.01):
+        if not self.w.isVisible():
+            return False
+        self.app.processEvents(QtCore.QEventLoop.AllEvents, 0.01)
+        return True
 
-    def plot_step(self, quad):
-        world_frame = self.get_world_frame(quad)
-        self.set_frame(world_frame)
-        plt.pause(0.00001)
+    def show(self):
+        self.app.exec_()
 
-    def set_frame(self, frame):
-        # convert 3x6 world_frame matrix into three line_data objects which is 3x2 (row:point index, column:x,y,z)
-        lines_data = [frame[:,[0,2]], frame[:,[1,3]], frame[:,[4,5]]]
-        ax = plt.gca()
-        lines = ax.get_lines()
-        for line, line_data in zip(lines, lines_data):
-            x, y, z = line_data
-            line.set_data(x, y)
-            line.set_3d_properties(z)
-
-    def get_world_frame(self, quad):
-        x, y, z = quad.position
-        origin = x, y, -z
-        roll, pitch, yaw = quad.rpy
-        rot = RPYToRot(roll, pitch, yaw)
-        wHb = np.r_[np.c_[rot,origin], np.array([[0, 0, 0, 1]])]
-        quadBodyFrame = BODY_FRAME.T
-        quadWorldFrame = wHb.dot(quadBodyFrame)
-        world_frame = quadWorldFrame[0:3]
-        return world_frame
-
-
-def RPYToRot(phi, theta, psi):
-    """
-    phi, theta, psi = roll, pitch , yaw
-    """
-    from math import sin, cos, asin, atan2, sqrt
-    return np.array([[cos(psi)*cos(theta) - sin(phi)*sin(psi)*sin(theta), cos(theta)*sin(psi) + cos(psi)*sin(phi)*sin(theta), -cos(phi)*sin(theta)],
-                     [-cos(phi)*sin(psi), cos(phi)*cos(psi), sin(phi)],
-                     [cos(psi)*sin(theta) + cos(theta)*sin(phi)*sin(psi), sin(psi)*sin(theta) - cos(psi)*cos(theta)*sin(phi), cos(phi)*cos(theta)]])
+if __name__ == '__main__':
+    import math
+    x, y, z = 0, 0, 0
+    roll, pitch, yaw = 0, 0, 0
+    plot = QuadPlotter()
+    while plot.show_step():
+        x += 0.01
+        yaw = math.sin(x)
+        plot.update(pos=(x, y, z), rpy=(roll, pitch, yaw))

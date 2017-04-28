@@ -7,11 +7,12 @@ def main():
     plotter = QuadPlotter()
 
     F = 1.7
-    quad.set_thrust(0, 2*F, 0, 2*F)
+    quad.set_thrust(F, F*1.01, F, F*1.01)
     dt = 0.01
     for i in range(1000):
         quad.step(dt)
-        plotter.plot_step(quad)
+        plotter.update(quad.position, quad.rpy)
+        plotter.show_step()
 
 
 if __name__ == '__main__':
