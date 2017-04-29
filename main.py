@@ -1,6 +1,6 @@
 import numpy as np
 from model.quadcopter import Quadcopter
-from plotter.quadplotter import QuadPlotter
+from plotter.quadplotter import QuadPlotter, RED
 
 def P_controller(quad, setpoint):
     """
@@ -32,11 +32,10 @@ def main():
     quad = Quadcopter()
     plotter = QuadPlotter()
 
-    F = 6.3245 # total thrust needed to constrast the gravity
     quad.position = (0, 0, 3) # put it a bit above the ground
     dt = 0.01
     setpoint = 5
-    plotter.add_marker((0, 0, setpoint))
+    plotter.add_marker((0, 0, setpoint), RED)
     while plotter.show_step():
         P_controller(quad, setpoint=setpoint)
         #lift_controller(quad)

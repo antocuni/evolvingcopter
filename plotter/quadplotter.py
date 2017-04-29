@@ -3,6 +3,12 @@ import pyqtgraph.opengl as gl
 import pyqtgraph as pg
 import numpy as np
 
+RED = (1, 0, 0)
+CYAN = (0, 1, 1)
+YELLOW = (1, 1, 0)
+GREEN = (0, 1, 0)
+
+
 class QuadPlotter(object):
 
     def __init__(self, title='Quadcopter', arm_length=2):
@@ -38,19 +44,14 @@ class QuadPlotter(object):
         self.w.addItem(ax)
 
     def _make_quad(self):
-        red = (1, 0, 0)
-        cyan = (0, 1, 1)
-        yellow = (1, 1, 0)
-        green = (0, 1, 0)
-        #
         L = self.arm_length
         H = L/8.0
         lines = [
             # from            to             color
-            ([  -L,  0,  0], [-L+H,  0,  0], red),    # indicate the norh
-            ([-L+H,  0,  0], [   L,  0,  0], cyan),   # north-south arm
-            ([   0, -L,  0], [   0,  L,  0], yellow), # west-east arm
-            ([   0,  0,  0], [   0,  0,  H], green),
+            ([  -L,  0,  0], [-L+H,  0,  0], RED),    # indicate the norh
+            ([-L+H,  0,  0], [   L,  0,  0], CYAN),   # north-south arm
+            ([   0, -L,  0], [   0,  L,  0], YELLOW), # west-east arm
+            ([   0,  0,  0], [   0,  0,  H], GREEN),
         ]
         points = []
         colors = []
@@ -66,10 +67,11 @@ class QuadPlotter(object):
                                       width=3)
         self.w.addItem(self.quad)
 
-    def add_marker(self, pos):
+    def add_marker(self, pos, color, size=0.1):
         points = np.array([pos])
         p = gl.GLScatterPlotItem(pos=points,
-                                 color=np.array((1, 0, 0)), size=0.1,
+                                 color=np.array(color),
+                                 size=size,
                                  pxMode=False)
         self.w.addItem(p)
 
