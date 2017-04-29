@@ -20,7 +20,10 @@ typedef struct {
  */
 typedef struct {
 
+    /* configurable parameters */
   	double z_at_gnd;	/* position coordinate (earth axis z) */
+    double mass;        /* Kg */
+    double motor_thrust; /* Kgf (Kg-force) */
 
 	double t;	/* simulation time */
 
@@ -64,7 +67,8 @@ typedef struct {
 
 } qrstate_t;
 
-extern void qr_init(qrstate_t *qrstate, double z_at_gnd);
+extern void qr_init(qrstate_t *qrstate, double z_at_gnd, double mass,
+                    double motor_thrust);
 extern void update_euler(qrstate_t *qrstate, double p, double q, double r, int use_body_angles);
 extern void qr_nextstate(qrstate_t *qrstate, double DT);
 

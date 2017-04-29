@@ -20,18 +20,24 @@ class TestQuadcopter(object):
         assert quad.t == 0
 
     def test_lift(self):
-        quad = Quadcopter()
+        quad = Quadcopter(mass=0.5, motor_thrust=0.5)
         assert quad.position == (0, 0, 0)
         assert quad.rpy == (0, 0, 0)
         #
-        # power all the motors, to lift the quad vertically
-        quad.set_thrust(10, 10, 10, 10)
-        quad.run(t=1)
+        # power all the motors, to lift the quad vertically. The motors give a
+        # total acceleration of 4g. Considering the gravity, we have a total
+        # net acceleration of 3g.
+        t = 1 # second
+        g = -9.81 # m/s**2
+        z = 0.5 * (3*g) * t**2  # d = 1/2 * a * t**2
         #
+        quad.set_thrust(1, 1, 1, 1)
+        quad.run(t=1, dt=0.0001)
         pos = quad.position
         assert pos.x == 0
         assert pos.y == 0
-        assert pos.z < 0 # check that the quad lifted a bit
+        assert pos.z == approx(z, rel=1e-3) # the simulated z is a bit
+                                            # different than the computed one
         assert quad.rpy == (0, 0, 0)
 
     def test_Quadcopter_yaw(self):

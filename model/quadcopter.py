@@ -6,12 +6,14 @@ RPY = namedtuple('RPY', ['roll', 'pitch', 'yaw'])
 
 class Quadcopter(object):
 
-    def __init__(self):
+    def __init__(self, mass=1.0, motor_thrust=1.0):
+        self.mass = mass
+        self.motor_thrust = motor_thrust
         self.reset()
 
     def reset(self):
         self.qr = _qrmod.ffi.new('qrstate_t*')
-        _qrmod.lib.qr_init(self.qr, 0)
+        _qrmod.lib.qr_init(self.qr, 0, self.mass, self.motor_thrust)
 
     def run(self, t, dt=0.001):
         elapsed = 0

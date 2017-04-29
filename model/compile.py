@@ -26,7 +26,8 @@ ffibuilder.cdef("""
         ...;
     } qrstate_t;
 
-    void qr_init(qrstate_t *qrstate, double z_at_gnd);
+    void qr_init(qrstate_t *qrstate, double z_at_gnd, double mass,
+                 double motor_thrust);
     void qr_nextstate(qrstate_t *qrstate, double DT);
 """)
 

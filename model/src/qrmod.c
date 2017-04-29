@@ -17,9 +17,12 @@
 
 #include "qrmod.h"
 
-void qr_init(qrstate_t *qrstate, double z_at_gnd)
+void qr_init(qrstate_t *qrstate, double z_at_gnd, double mass,
+             double motor_thrust)
 {
   	qrstate->z_at_gnd = z_at_gnd;	/* position coordinate (earth axis z) */
+    qrstate->mass = mass;
+    qrstate->motor_thrust = motor_thrust;
 
 	qrstate->t = 0;		/* simulation time */
 
@@ -120,7 +123,7 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
 	double a_, b_, c_, d_, e_, f_;
 
 	double o1, o2, o3, o4; // rotor speed omega
-	double m, b, d, g;
+	double mf, m, b, d, g;
 	double Ix, Iy, Iz, Izx;
 
 	/* gravity force
@@ -146,10 +149,10 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
         reaction of the propellers due to the draft of the blades: this is the
         *d* variable
     */
-    double mt = 1*g; // motor thrust (Kg?)
+    mf = qrstate->motor_thrust * g; // N, max force produced by each motor
 	b = 1.0;  // distance from the center of propeller to center of quad
 	d = 10.0; // 10*b: avoid lots of Z thrust when yawing
-	m = 1.0;  // mass
+	m = qrstate->mass;  // mass
 	Ix = Iy = 1.0;
 	Iz = 2.0;
 	Izx = 0.0;
@@ -198,7 +201,7 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
 	 */
 
 
-	/* clip rotor thrusts
+	/* clip rotor pwm
 	 */
 	if (a1 < 0) a1 = 0;
 	if (a1 > 1) a1 = 1;
@@ -227,19 +230,19 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
 	/* compute vertical thrust (body axis)
 	 * function of 4 rotors
 	 */
-	Z = - mt * (o1*o1 + o2*o2 + o3*o3 + o4*o4);
+	Z = - mf * (o1*o1 + o2*o2 + o3*o3 + o4*o4);
 
 	/* compute roll moment (body axis)
 	 */
-	L = b * mt * (o4*o4 - o2*o2);
+	L = b * mf * (o4*o4 - o2*o2);
 
 	/* compute pitch moment (body axis)
 	 */
-	M = b * mt * (o1*o1 - o3*o3);
+	M = b * mf * (o1*o1 - o3*o3);
 
 	/* compute yaw moment (body axis)
 	 */
-	N = d * mt * (o2*o2 + o4*o4 - o1*o1 - o3*o3);
+	N = d * mf * (o2*o2 + o4*o4 - o1*o1 - o3*o3);
 	
 	/* trace control data
 	 */ 
