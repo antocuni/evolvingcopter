@@ -30,7 +30,15 @@ class Quadcopter(object):
 
     @property
     def position(self):
-        return Point(self.qr.x, self.qr.y, self.qr.z)
+        # qrmod has a Z axis which goes "down". Invert it so that it goes "up"
+        return Point(self.qr.x, self.qr.y, -self.qr.z)
+
+    @position.setter
+    def position(self, pos):
+        x, y, z = pos
+        self.qr.x = x
+        self.qr.y = y
+        self.qr.z = -z # invert the z
 
     @property
     def rpy(self):

@@ -8,7 +8,7 @@ def P_controller(quad, setpoint):
     """
     F = 0.5 # PWM needed to contrast the gravity
     K = 0.1
-    diff = quad.position.z - setpoint
+    diff = setpoint - quad.position.z
     T = F + K*diff
     quad.set_thrust(T, T, T, T)
 
@@ -33,10 +33,10 @@ def main():
     plotter = QuadPlotter()
 
     F = 6.3245 # total thrust needed to constrast the gravity
-    quad.qr.z = -3
+    quad.position = (0, 0, 3) # put it a bit above the ground
     dt = 0.01
-    setpoint = -5
-    plotter.add_marker((0, 0, -setpoint))
+    setpoint = 5
+    plotter.add_marker((0, 0, setpoint))
     while plotter.show_step():
         P_controller(quad, setpoint=setpoint)
         #lift_controller(quad)

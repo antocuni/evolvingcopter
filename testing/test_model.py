@@ -28,7 +28,7 @@ class TestQuadcopter(object):
         # total acceleration of 4g. Considering the gravity, we have a total
         # net acceleration of 3g.
         t = 1 # second
-        g = -9.81 # m/s**2
+        g = 9.81 # m/s**2
         z = 0.5 * (3*g) * t**2  # d = 1/2 * a * t**2
         #
         quad.set_thrust(1, 1, 1, 1)

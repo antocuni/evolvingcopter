@@ -81,7 +81,7 @@ class QuadPlotter(object):
         """
         self.quad.resetTransform()
         x, y, z = pos
-        self.quad.translate(x, y, -z) # invert the z axis
+        self.quad.translate(x, y, z) # invert the z axis
         roll, pitch, yaw = np.rad2deg(rpy)
         self.quad.rotate(roll, 1, 0, 0, local=True)
         self.quad.rotate(pitch, 0, 1, 0, local=True)
