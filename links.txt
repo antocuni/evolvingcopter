@@ -1,0 +1,11 @@
+Random useful links:
+
+Quadcopter Dynamics and Simulation
+  http://andrew.gibiansky.com/blog/physics/quadcopter-dynamics/
+
+How does a Quadrotor fly? A journey from physics, mathematics, control systems
+and computer science towards a "Controllable Flying Object"
+  https://www.slideshare.net/corradosantoro/quadcopter-31045379
+
+Control of a Quadcopter
+https://www.slideshare.net/PabloGarciaAu/control-of-a-quadcopter
