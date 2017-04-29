@@ -4,6 +4,8 @@
  *          Arjan van Gemund 
  *          Embedded Software Lab, TU Delft
  *
+ *          modified by Antonio Cuni (anto.cuni@gmail.com), 2017
+ *
  *  	    Euler angles: NASA standard aeroplane (psi-theta-phi)
  *
  *--------------------------------------------------------------------------
@@ -36,8 +38,11 @@ void qr_init(qrstate_t *qrstate, double z_at_gnd)
   	qrstate->mx = 0;
   	qrstate->my = 0;
 
-  	/* actuators 
-  	 */
+    /* actuators:
+       they are values between 0.0 and 1.0, as if they were PWM signal.  The
+       motors have a defined maximum thrust. The actual thrust is proportional
+       to the square of PWM
+    */
   	qrstate->a1 = 0;	/* rotor 1 */
   	qrstate->a2 = 0;	/* rotor 2 */
   	qrstate->a3 = 0;	/* rotor 3 */
@@ -121,7 +126,7 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
 	/* gravity force
 	 */
 	if (qrstate->sim_control.enable_gravity)
-		g = 10; /* 9.81; */
+		g = 9.81; /* 9.81; */
 	else
 		g = 0;
 
@@ -141,6 +146,7 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
         reaction of the propellers due to the draft of the blades: this is the
         *d* variable
     */
+    double mt = 1*g; // motor thrust (Kg?)
 	b = 1.0;  // distance from the center of propeller to center of quad
 	d = 10.0; // 10*b: avoid lots of Z thrust when yawing
 	m = 1.0;  // mass
@@ -194,14 +200,14 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
 
 	/* clip rotor thrusts
 	 */
-	// if (a1 < 0) a1 = 0; 
-	// if (a1 > 100) a1 = 100;
-	// if (a2 < 0) a2 = 0; 
-	// if (a2 > 100) a2 = 100;
-	// if (a3 < 0) a3 = 0; 
-	// if (a3 > 100) a2 = 100;
-	// if (a4 < 0) a4 = 0; 
-	// if (a4 > 100) a2 = 100;
+	if (a1 < 0) a1 = 0;
+	if (a1 > 1) a1 = 1;
+	if (a2 < 0) a2 = 0;
+	if (a2 > 1) a2 = 1;
+	if (a3 < 0) a3 = 0;
+	if (a3 > 1) a2 = 1;
+	if (a4 < 0) a4 = 0;
+	if (a4 > 1) a2 = 1;
 
 	/* compute rotor speed
 	 */
@@ -221,19 +227,19 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
 	/* compute vertical thrust (body axis)
 	 * function of 4 rotors
 	 */
-	Z = - b * (o1*o1 + o2*o2 + o3*o3 + o4*o4);
+	Z = - mt * (o1*o1 + o2*o2 + o3*o3 + o4*o4);
 
 	/* compute roll moment (body axis)
 	 */
-	L = b * (o4*o4 - o2*o2); 
+	L = b * mt * (o4*o4 - o2*o2);
 
 	/* compute pitch moment (body axis)
 	 */
-	M = b * (o1*o1 - o3*o3); 
+	M = b * mt * (o1*o1 - o3*o3);
 
 	/* compute yaw moment (body axis)
 	 */
-	N = d * (o2*o2 + o4*o4 - o1*o1 - o3*o3); 
+	N = d * mt * (o2*o2 + o4*o4 - o1*o1 - o3*o3);
 	
 	/* trace control data
 	 */ 
@@ -295,7 +301,7 @@ void qr_nextstate(qrstate_t *qrstate, double DT)
 	dz = -u * sintheta + 
 	     v * sinphi * costheta +
 	     w * cosphi * costheta;
-	     
+
 	/* integrate the system of equations
 	 */
 	u += du * DT; v += dv * DT; w += dw * DT;

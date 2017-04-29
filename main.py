@@ -6,28 +6,24 @@ def P_controller(quad, setpoint):
     """
     a very simple "P-only" controller
     """
-    F = 6.3245 # ~total thrust needed to constrast the gravity
-    K = 1.5
+    F = 0.5 # PWM needed to contrast the gravity
+    K = 0.1
     diff = quad.position.z - setpoint
-    F = K*diff
-    T = F/4 + K*diff
+    T = F + K*diff
     quad.set_thrust(T, T, T, T)
 
 def lift_controller(quad):
     """
     make the quad lift vertically
     """
-    F = 6.3245 # ~total thrust needed to constrast the gravity
-    T = F/4
-    T *= 1.1
+    T = 0.5 # PWM needed to contrast the gravity
     quad.set_thrust(T, T, T, T)
 
 def yaw_controller(quad):
     """
     make the quad rotate
     """
-    F = 6.3245 # ~total thrust needed to constrast the gravity
-    T = F/4
+    T = 0.5
     d = T*0.1
     quad.set_thrust(T-d, T+d, T-d, T+d)
 
@@ -42,10 +38,10 @@ def main():
     setpoint = -5
     plotter.add_marker((0, 0, -setpoint))
     while plotter.show_step():
-        quad.step(dt)
         P_controller(quad, setpoint=setpoint)
         #lift_controller(quad)
         #yaw_controller(quad)
+        quad.step(dt)
         plotter.update(quad.position, quad.rpy)
 
 
