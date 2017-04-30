@@ -70,6 +70,7 @@ class Environment(object):
         quad = Quadcopter()
         quad.position = (0, 0, 3)
         z_setpoint = 5 # first task: go to setpoint (0, 0, 5)
+        fitness = 0
         while quad.t < 4:
             if quad.t >= 2:
                 # switch to second task
@@ -81,20 +82,21 @@ class Environment(object):
             pwm = outputs[0]
             quad.set_thrust(pwm, pwm, pwm, pwm)
             quad.step(self.dt)
-            #fitness += self.compute_fitness(quad)
+            fitness += self.compute_fitness(quad, z_setpoint)
             self.show_step(quad)
+        return fitness
 
     def show_step(self, quad):
         if self.show:
             self.plotter.update(quad)
             self.plotter.show_step()
 
-    def compute_fitness(self, quad):
+    def compute_fitness(self, quad, z_setpoint):
         # for now, the goal is to reach the target position as fast as
         # possible and then to stay there. So a measure of the fitness is the
         # distance to the target at every step (the goal is to *minimize* the
         # total value, of course)
-        target = [0, 0, 1]
+        target = [0, 0, z_setpoint]
         position = np.array(quad.position)
         distance = np.linalg.norm(target - position)
         return distance
@@ -102,9 +104,24 @@ class Environment(object):
 
 def main():
     import time
-    c = Creature(0)
-    env = Environment(show=True)
-    env.run(c)
+    #
+    # create many creatures
+    env = Environment(show=False)
+    creatures = []
+    print 'running simulation...'
+    for i in range(50):
+        c = Creature(i)
+        fitness = env.run(c)
+        creatures.append((fitness, c))
+
+    creatures.sort()
+    for fitness, c in creatures:
+        print fitness, c.id
+
+    # show the best
+    show_env = Environment(show=True)
+    fitness, c = creatures[0]
+    show_env.run(c)
 
 if __name__ == '__main__':
     main()
