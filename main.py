@@ -1,6 +1,6 @@
 import numpy as np
 from model.quadcopter import Quadcopter
-from plotter.quadplotter import QuadPlotter, RED
+from plotter.quadplotter import QuadPlotter, RED, YELLOW
 
 def P_controller(quad, sp_z):
     """
@@ -57,14 +57,17 @@ def main():
 
     quad.position = (0, 0, 3) # put it a bit above the ground
     dt = 0.01
+    plotter.add_marker((0, 0, 5), RED)
+    plotter.add_marker((0, 0, 3), YELLOW)
     setpoint = 5
-    plotter.add_marker((0, 0, setpoint), RED)
     while plotter.show_step():
         #P_controller(quad, sp_z=setpoint)
         pd_controller(quad, dt, sp_z=setpoint)
         #lift_controller(quad)
         #yaw_controller(quad)
         quad.step(dt)
+        if quad.t > 3:
+            setpoint = 3
         plotter.update(quad)
 
 
