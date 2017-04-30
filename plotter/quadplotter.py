@@ -14,34 +14,51 @@ class QuadPlotter(object):
     def __init__(self, title='Quadcopter', arm_length=2):
         self.arm_length = arm_length
         self.app = QtGui.QApplication([])
-        self.w = gl.GLViewWidget()
-        self.w.opts['distance'] = 40
-        self.w.setWindowTitle(title)
+        self._make_glview()
+        self._make_layout()
+        self.win.setWindowTitle(title)
+        self.win.show()
+        N = 3
+        self.win.resize(640*N, 480*N)
+        self.win.move(0, 0)
+
+    def _make_layout(self):
+        self.win = QtGui.QWidget()
+        layout = QtGui.QGridLayout()
+        self.win.setLayout(layout)
+        #
+        self.label_t = QtGui.QLabel()
+        self.label_t.setAlignment(QtCore.Qt.AlignRight)
+        self.glview.setSizePolicy(QtGui.QSizePolicy.Expanding,
+                                  QtGui.QSizePolicy.Expanding)
+        #
+        layout.addWidget(self.glview, 0, 0)
+        layout.addWidget(self.label_t, 1, 0)
+
+    def _make_glview(self):
+        self.glview = gl.GLViewWidget()
+        self.glview.opts['distance'] = 40
         self._make_grid()
         self._make_quad()
-        self.w.show()
-        N = 3
-        self.w.resize(640*N, 480*N)
-        self.w.move(0, 0)
 
     def _make_grid(self):
         # make the grid
         gx = gl.GLGridItem()
         gx.rotate(90, 0, 1, 0)
         gx.translate(-10, 0, 0)
-        self.w.addItem(gx)
+        self.glview.addItem(gx)
         gy = gl.GLGridItem()
         gy.rotate(90, 1, 0, 0)
         gy.translate(0, -10, 0)
-        self.w.addItem(gy)
+        self.glview.addItem(gy)
         gz = gl.GLGridItem()
         gz.translate(0, 0, -10)
-        self.w.addItem(gz)
+        self.glview.addItem(gz)
         #
         # make the axes
         ax = gl.GLAxisItem()
         ax.setSize(100, 100, 100)
-        self.w.addItem(ax)
+        self.glview.addItem(ax)
 
     def _make_quad(self):
         L = self.arm_length
@@ -61,11 +78,11 @@ class QuadPlotter(object):
             colors.append(color)
             colors.append(color)
         #
-        self.quad = gl.GLLinePlotItem(pos=np.array(points),
-                                      color=np.array(colors),
-                                      mode='lines',
-                                      width=3)
-        self.w.addItem(self.quad)
+        self.quadplot = gl.GLLinePlotItem(pos=np.array(points),
+                                          color=np.array(colors),
+                                          mode='lines',
+                                          width=3)
+        self.glview.addItem(self.quadplot)
 
     def add_marker(self, pos, color, size=0.1):
         points = np.array([pos])
@@ -73,24 +90,26 @@ class QuadPlotter(object):
                                  color=np.array(color),
                                  size=size,
                                  pxMode=False)
-        self.w.addItem(p)
+        self.glview.addItem(p)
 
-    def update(self, pos, rpy):
+    def update(self, quad):
         """
         Set the new position and rotation of the quadcopter: ``pos`` is a tuple
         (x, y, z), and rpy is a tuple (roll, pitch, yaw) expressed in
         *radians*
         """
-        self.quad.resetTransform()
-        x, y, z = pos
-        self.quad.translate(x, y, z) # invert the z axis
-        roll, pitch, yaw = np.rad2deg(rpy)
-        self.quad.rotate(roll, 1, 0, 0, local=True)
-        self.quad.rotate(pitch, 0, 1, 0, local=True)
-        self.quad.rotate(yaw, 0, 0, 1, local=True)
+        x, y, z = quad.position
+        roll, pitch, yaw = np.rad2deg(quad.rpy)
+        self.quadplot.resetTransform()
+        self.quadplot.translate(x, y, z)
+        self.quadplot.rotate(roll, 1, 0, 0, local=True)
+        self.quadplot.rotate(pitch, 0, 1, 0, local=True)
+        self.quadplot.rotate(yaw, 0, 0, 1, local=True)
+        #
+        self.label_t.setText('t = %5.2f' % quad.t)
 
     def show_step(self, dt=0.01):
-        if not self.w.isVisible():
+        if not self.win.isVisible():
             return False
         self.app.processEvents(QtCore.QEventLoop.AllEvents, 0.01)
         return True

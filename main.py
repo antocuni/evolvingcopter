@@ -65,7 +65,7 @@ def main():
         #lift_controller(quad)
         #yaw_controller(quad)
         quad.step(dt)
-        plotter.update(quad.position, quad.rpy)
+        plotter.update(quad)
 
 
 
