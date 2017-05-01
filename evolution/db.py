@@ -36,3 +36,19 @@ class CreatureDB(object):
         self.cur.execute("SELECT pickled FROM creatures WHERE id=?", (id,))
         pickled = self.cur.fetchone()[0]
         return pickle.loads(pickled)
+
+    def update_fitness(self, c, fitness):
+        assert c.id is not None
+        self.cur.execute("""
+            UPDATE creatures
+            SET fitness = ?
+            WHERE id = ?
+        """, (fitness, c.id))
+
+    def load_stats(self):
+        """
+        Return all the data *except* the creature itself (i.e. only id, generation
+        and fitness)
+        """
+        self.cur.execute("SELECT id, generation, fitness FROM creatures")
+        return self.cur.fetchall()

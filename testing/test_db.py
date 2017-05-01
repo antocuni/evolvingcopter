@@ -33,3 +33,16 @@ class TestDB(object):
         assert x2.id == 2
         assert x2.generation == 43
         assert x2.data == 'world'
+
+    def test_update_fitness(self, db):
+        c1 = FakeCreature(42, 'hello')
+        c2 = FakeCreature(43, 'world')
+        db.save(c1)
+        db.save(c2)
+        db.update_fitness(c1, 10)
+        db.update_fitness(c2, 100)
+        rows = db.load_stats()
+        assert rows == [
+            (1, 42, 10),
+            (2, 43, 100),
+        ]
