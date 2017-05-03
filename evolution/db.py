@@ -24,7 +24,7 @@ class CreatureDB(object):
     def new_generation(self):
         self.generation += 1
 
-    def save(self, c):
+    def new(self, c):
         """
         Insert a new creature in the DB, and set c.id accordingly
         """
@@ -54,6 +54,10 @@ class CreatureDB(object):
             WHERE id = ?
         """, (fitness, c.id))
 
+    def count(self):
+        self.cur.execute("SELECT COUNT(*) from creatures")
+        return self.cur.fetchone()[0]
+
     def load_all(self):
         """
         Return all the data *except* the creature itself
@@ -61,6 +65,3 @@ class CreatureDB(object):
         self.cur.execute("SELECT id, born_at, killed_at, fitness FROM creatures")
         return self.cur.fetchall()
 
-    def count(self):
-        self.cur.execute("SELECT COUNT(*) from creatures")
-        return self.cur.fetchone()[0]

@@ -15,11 +15,11 @@ class FakeCreature(object):
 
 class TestDB(object):
 
-    def test_save_load(self, db):
+    def test_new_load(self, db):
         c1 = FakeCreature('hello')
         c2 = FakeCreature('world')
-        db.save(c1)
-        db.save(c2)
+        db.new(c1)
+        db.new(c2)
         assert c1.id == 1
         assert c2.id == 2
         #
@@ -34,8 +34,8 @@ class TestDB(object):
     def test_update_fitness(self, db):
         c1 = FakeCreature('hello')
         c2 = FakeCreature('world')
-        db.save(c1)
-        db.save(c2)
+        db.new(c1)
+        db.new(c2)
         db.update_fitness(c1, 10)
         db.update_fitness(c2, 100)
         rows = db.load_all()
@@ -47,9 +47,9 @@ class TestDB(object):
     def test_generation(self, db):
         c1 = FakeCreature('hello')
         c2 = FakeCreature('world')
-        db.save(c1)
+        db.new(c1)
         db.new_generation()
-        db.save(c2)
+        db.new(c2)
         rows = db.load_all()
         assert rows == [
             (1, 0, None, None), # generation 0
