@@ -1,3 +1,4 @@
+import random
 from evolution.db import CreatureDB
 from evolution.creature import Creature
 from evolution.environment import Environment
@@ -43,6 +44,38 @@ class Universe(object):
     def compute_fitness_one(self, c):
         fitness = self.env.run(c)
         self.db.update_fitness(c, fitness)
+
+    def kill_some(self):
+        # first, sort the creatures by fitness (smaller is better)
+        creatures = list(self.alive)
+        creatures.sort(key=self.db.get_fitness)
+        #
+        # normally, only the upper half would survive. However, to improve
+        # genetic variation, a random 5% surives even if it's in the lower
+        # half. We do the following:
+        #
+        # 1. the best 10% always survives
+        # 2. N creatures in the [10%:50%] are killed; the other survive
+        # 3. N creatures in the [50%:100%] survives; the other are killed
+        #
+        N = int(round(self.population * 0.05))
+        i10 = int(round(self.population * 0.1))
+        i50 = int(round(self.population * 0.5))
+        best = set(creatures[:i10])
+        good = set(creatures[i10:i50])
+        bad = set(creatures[i50:])
+        #
+        unlucky = set(random.sample(good, N))
+        lucky = set(random.sample(bad, N))
+        good.difference_update(unlucky)
+        bad.difference_update(lucky)
+        survivors = best.union(good).union(lucky)
+        killed = bad.union(unlucky)
+        #
+        assert len(survivors) + len(killed) == self.population
+        for c in killed:
+            self.db.kill(c)
+        self.alive = survivors
 
     def run_one_generation(self):
         self.compute_fitness()

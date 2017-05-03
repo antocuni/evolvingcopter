@@ -1,4 +1,5 @@
 import pytest
+import random
 import itertools
 from evolution.universe import Universe
 
@@ -7,12 +8,8 @@ def filename(tmpdir):
     return str(tmpdir.join('creatures.db'))
 
 class FakeEnv(object):
-
-    def __init__(self):
-        self._fitness = itertools.count(0)
-
     def run(self, c):
-        return next(self._fitness)
+        return c.id
 
 def test_first_generation(filename):
     uni = Universe(filename, env=None, population=10)
@@ -27,9 +24,9 @@ def test_compute_fitness(filename):
     uni = Universe(filename, env=FakeEnv(), population=5)
     uni.compute_fitness()
     #
-    for i, c in enumerate(uni.alive):
+    for c in uni.alive:
         fitness = uni.db.get_fitness(c)
-        assert fitness == i
+        assert fitness == c.id
 
 def test_compute_fitness_partial(filename):
     uni = Universe(filename, env=FakeEnv(), population=5)
@@ -47,3 +44,31 @@ def test_compute_fitness_partial(filename):
     assert computed == set([c3, c4, c5])
 
 
+def test_kill_some(filename, monkeypatch):
+    def my_sample(population, k):
+        # not really random :)
+        population = list(population)
+        population.sort(key=lambda c: c.id)
+        return population[:k]
+    monkeypatch.setattr(random, 'sample', my_sample)
+    #
+    uni = Universe(filename, env=FakeEnv(), population=100)
+    all_creatures = list(uni.alive)
+    all_creatures.sort(key=lambda c: c.id)
+    uni.compute_fitness() # c1 is the best, c100 is the worst
+    uni.kill_some()
+    #
+    # check that the expected creatures survived
+    all_ids = range(1, 101)
+    best = all_ids[:10]
+    unlucky = all_ids[10:15]
+    good = all_ids[15:50] # (excluding the unlucky ones)
+    lucky = all_ids[50:55]
+    bad = all_ids[55:]    # (excluding the lucky ones)
+    alive_ids = sorted([c.id for c in uni.alive])
+    assert alive_ids == (best + good + lucky)
+    #
+    # check that the DB agrees about what is alive and what it's not
+    for c in all_creatures:
+        should_be_alive = (c in uni.alive)
+        assert uni.db.is_alive(c) == should_be_alive

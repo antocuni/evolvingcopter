@@ -55,3 +55,14 @@ class TestDB(object):
             (1, 0, None, None), # generation 0
             (2, 1, None, None), # generation 1
         ]
+
+    def test_kill(self, db):
+        c1 = FakeCreature('hello')
+        c2 = FakeCreature('world')
+        db.new(c1)
+        db.new(c2)
+        assert db.is_alive(c1)
+        assert db.is_alive(c2)
+        db.kill(c2)
+        assert db.is_alive(c1)
+        assert not db.is_alive(c2)

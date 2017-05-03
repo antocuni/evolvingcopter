@@ -64,6 +64,21 @@ class CreatureDB(object):
         fitness = self.cur.fetchone()[0]
         return fitness
 
+    def kill(self, c):
+        assert c.id is not None
+        killed_at = self.generation
+        self.cur.execute("""
+            UPDATE creatures
+            SET killed_at = ?
+            WHERE id = ?
+        """, (killed_at, c.id))
+
+    def is_alive(self, c):
+        assert c.id is not None
+        self.cur.execute("SELECT killed_at FROM creatures WHERE id=?", (c.id,))
+        killed_at = self.cur.fetchone()[0]
+        return killed_at is None
+
     def count(self):
         self.cur.execute("SELECT COUNT(*) FROM creatures")
         return self.cur.fetchone()[0]
