@@ -1,3 +1,4 @@
+import random
 import numpy as np
 
 class Creature(object):
@@ -5,14 +6,18 @@ class Creature(object):
     OUTPUTS = 1 # PWM for all 4 motors
     STATE_VARS = 1
 
-    def __init__(self, generation=0, parent=None):
+    def __init__(self, parent=None, matrix=None, constant=None):
         N = self.INPUTS + self.STATE_VARS
         M = self.OUTPUTS + self.STATE_VARS
         self.id = None
-        self.generation = generation
         self.parent = parent
-        self.matrix = np.random.random(N*M).reshape(M, N) - 0.5
-        self.constant = np.random.random(M) - 0.5
+        self.matrix = matrix
+        self.constant = constant
+        #
+        if self.matrix is None:
+            self.matrix = np.random.random(N*M).reshape(M, N) - 0.5
+        if self.constant is None:
+            self.constant = np.random.random(M) - 0.5
         self.reset()
 
     def __repr__(self):
@@ -30,7 +35,7 @@ class Creature(object):
         self.state = new_state
         return outputs
 
-    def evolve(self):
+    def reproduce(self):
         """
         What do we want?
         We probably want two steps of evolution:
@@ -41,8 +46,17 @@ class Creature(object):
          2. the second does rare mutations: it might adjust 1 or 2 values by a larger amount
             (+/- 20%?), but it occurs rarely
         """
-        # mu = 0
-        # sigma = 0.2
-        # k = np.random.normal(mu, sigma, len(self.matrix))
-        # matrix + (matrix*k)
-
+        mu = 0
+        sigma = 0.1
+        if random.choice([True, False]):
+            # evolve the matrix
+            k = np.random.normal(mu, sigma, self.matrix.shape)
+            new_matrix = self.matrix + (self.matrix*k)
+            new_constant = self.constant
+        else:
+            # evolve the constant
+            new_matrix = self.matrix
+            k = np.random.normal(mu, sigma, self.constant.shape)
+            new_constant = self.constant * k
+        #
+        return Creature(parent=self, matrix=new_matrix, constant=new_constant)

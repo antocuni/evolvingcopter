@@ -1,4 +1,5 @@
 import random
+import numpy as np
 from evolution.db import CreatureDB
 from evolution.creature import Creature
 from evolution.environment import Environment
@@ -36,14 +37,23 @@ class Universe(object):
         #
         #   2. in case we interrupted the simulation in the middle of
         #      compute_fitness
+        values = []
         for c in self.alive:
             fitness = self.db.get_fitness(c)
             if fitness is None:
-                self.compute_fitness_one(c)
+                fitness = self.compute_fitness_one(c)
+            values.append(fitness)
+        #
+        min = np.min(values)
+        avg = np.average(values)
+        max = np.max(values)
+        #
+        print 'Generation %3d: min=%9.2f  avg=%9.2f   max=%9.2f' % (self.db.generation, min, avg, max)
 
     def compute_fitness_one(self, c):
         fitness = self.env.run(c)
         self.db.update_fitness(c, fitness)
+        return fitness
 
     def kill_some(self):
         # first, sort the creatures by fitness (smaller is better)
@@ -76,6 +86,12 @@ class Universe(object):
         for c in killed:
             self.db.kill(c)
         self.alive = survivors
+
+    def reproduce(self):
+        new_creatures = [c.reproduce() for c in self.alive]
+        for c in new_creatures:
+            self.db.new(c)
+            self.alive.add(c)
 
     def run_one_generation(self):
         self.compute_fitness()
