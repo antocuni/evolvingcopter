@@ -21,6 +21,10 @@ class CreatureDB(object):
         if self.generation is None:
             self.generation = 0
 
+    @property
+    def atomic(self):
+        return Transaction(self.cur)
+
     def new_generation(self):
         self.generation += 1
 
@@ -54,8 +58,14 @@ class CreatureDB(object):
             WHERE id = ?
         """, (fitness, c.id))
 
+    def get_fitness(self, c):
+        assert c.id is not None
+        self.cur.execute("SELECT fitness FROM creatures WHERE id=?", (c.id,))
+        fitness = self.cur.fetchone()[0]
+        return fitness
+
     def count(self):
-        self.cur.execute("SELECT COUNT(*) from creatures")
+        self.cur.execute("SELECT COUNT(*) FROM creatures")
         return self.cur.fetchone()[0]
 
     def load_all(self):
@@ -65,3 +75,18 @@ class CreatureDB(object):
         self.cur.execute("SELECT id, born_at, killed_at, fitness FROM creatures")
         return self.cur.fetchall()
 
+
+class Transaction(object):
+
+    def __init__(self, cur):
+        self.cur = cur
+
+    def __enter__(self):
+        self.cur.execute('BEGIN')
+        return self
+
+    def __exit__(self, etype, evalue, tb):
+        if etype:
+            self.cur.execute('ROLLBACK')
+        else:
+            self.cur.execute('COMMIT')

@@ -5,15 +5,18 @@ class Creature(object):
     OUTPUTS = 1 # PWM for all 4 motors
     STATE_VARS = 1
 
-    def __init__(self, id, generation=0, parent=None):
+    def __init__(self, generation=0, parent=None):
         N = self.INPUTS + self.STATE_VARS
         M = self.OUTPUTS + self.STATE_VARS
-        self.id = id
+        self.id = None
         self.generation = generation
         self.parent = parent
         self.matrix = np.random.random(N*M).reshape(M, N) - 0.5
         self.constant = np.random.random(M) - 0.5
         self.reset()
+
+    def __repr__(self):
+        return '<Creature id=%s, generation=%s>' % (self.id, self.generation)
 
     def reset(self):
         self.state = np.zeros(self.STATE_VARS)
