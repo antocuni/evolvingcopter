@@ -1,6 +1,7 @@
 model/_qrmod.c
 model/_qrmod.o
 model/src/qrmod.o
+pdf/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
