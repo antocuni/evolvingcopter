@@ -22,6 +22,7 @@ def show_best():
     from evolution.db import CreatureDB
     db = CreatureDB('creatures.db.200')
     c = db.load_best()
+    c.reset()
     show_env = Environment(show=True) #, z1=2, z2=4)
     print show_env.run(c)
 

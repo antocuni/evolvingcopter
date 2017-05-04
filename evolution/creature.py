@@ -24,15 +24,15 @@ class Creature(object):
         return '<Creature id=%s, generation=%s>' % (self.id, self.generation)
 
     def reset(self):
-        self.state = np.zeros(self.STATE_VARS)
+        self.state = np.zeros(self.STATE_VARS + self.INPUTS)
 
     def run_step(self, inputs):
-        in_values = np.concatenate([self.state, inputs])
-        out_values = np.dot(self.matrix, in_values) + self.constant
-        new_state = out_values[:self.STATE_VARS]
+        # state: [state_vars ... inputs]
+        # out_values: [state_vars, ... outputs]
+        self.state[self.STATE_VARS:] = inputs
+        out_values = np.dot(self.matrix, self.state) + self.constant
+        self.state[:self.STATE_VARS] = out_values[:self.STATE_VARS]
         outputs = out_values[self.STATE_VARS:]
-        #
-        self.state = new_state
         return outputs
 
     def reproduce(self):

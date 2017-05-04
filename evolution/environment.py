@@ -1,7 +1,6 @@
 import math
 import numpy as np
 from model.quadcopter import Quadcopter
-#from plotter.quadplotter import QuadPlotter, RED, GREEN
 
 class Environment(object):
     """
@@ -21,6 +20,7 @@ class Environment(object):
         self.show = show
         self.plotter = None
         if self.show:
+            from plotter.quadplotter import QuadPlotter, RED, GREEN
             self.plotter = QuadPlotter()
             self.plotter.add_marker((0, 0, z1), RED)
             self.plotter.add_marker((0, 0, z2), GREEN)
