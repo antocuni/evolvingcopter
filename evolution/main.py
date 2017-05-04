@@ -10,8 +10,9 @@ from evolution.universe import Universe
 DB = 'creatures.db'
 
 def main():
-    env = Environment(show=False)
-    uni = Universe(DB, env, population=500)
+    envs = [Environment(z1=5, z2=3),
+            Environment(z1=5, z2=8)]
+    uni = Universe(DB, envs, population=500)
     while True:
         a = time.time()
         uni.run_one_generation()
@@ -22,10 +23,10 @@ def main():
 
 def show_best():
     from evolution.db import CreatureDB
-    db = CreatureDB('creatures.db.200')
+    db = CreatureDB('creatures.db')
     c = db.load_best()
     c.reset()
-    show_env = Environment(show=True) #, z1=2, z2=4)
+    show_env = Environment(show=True, z1=5, z2=8)
     print show_env.run(c)
 
 

@@ -6,9 +6,9 @@ from evolution.environment import Environment
 
 class Universe(object):
 
-    def __init__(self, filename, env, population=500):
+    def __init__(self, filename, envs, population=500):
         self.db = CreatureDB(filename)
-        self.env = env
+        self.envs = envs
         self.population = population
         self.alive = set()
         if self.db.count() == 0:
@@ -51,7 +51,9 @@ class Universe(object):
         print 'Generation %3d: min=%9.2f  avg=%9.2f   max=%9.2f' % (self.db.generation, vmin, vavg, vmax)
 
     def compute_fitness_one(self, c):
-        fitness = self.env.run(c)
+        fitness = 0
+        for env in self.envs:
+            fitness += env.run(c)
         self.db.update_fitness(c, fitness)
         return fitness
 
