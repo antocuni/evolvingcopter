@@ -90,6 +90,19 @@ class CreatureDB(object):
         self.cur.execute("SELECT id, born_at, killed_at, fitness FROM creatures")
         return self.cur.fetchall()
 
+    def load_best(self):
+        """
+        Return the best creature ever recorded
+        """
+        self.cur.execute("""
+            SELECT id
+            FROM creatures
+            WHERE fitness == (
+                SELECT MIN(fitness) FROM creatures
+            )
+        """)
+        id = self.cur.fetchone()[0]
+        return self.load(id)
 
 class Transaction(object):
 
