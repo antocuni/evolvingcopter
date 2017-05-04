@@ -7,33 +7,27 @@ DB = 'creatures.db'
 
 def main():
     env = Environment(show=False)
-    uni = Universe(DB, env, population=10)
+    uni = Universe(DB, env, population=500)
     try:
         while True:
+            a = time.time()
             uni.run_one_generation()
+            b = time.time()
+            print '   %.2f secs' % (b-a)
+            print
     except KeyboardInterrupt:
         import pdb;pdb.set_trace()
 
 
-def main2():
-    #
-    # create many creatures
-    env = Environment(show=False)
-    creatures = []
-    print 'running simulation...'
-    for i in range(50):
-        c = Creature(i)
-        fitness = env.run(c)
-        creatures.append((fitness, c))
 
-    creatures.sort()
-    for fitness, c in creatures:
-        print fitness, c.id
+def show_best():
+    from evolution.db import CreatureDB
+    db = CreatureDB('creatures.db.200')
+    c = db.load_best()
+    show_env = Environment(show=True) #, z1=2, z2=4)
+    print show_env.run(c)
 
-    # show the best
-    show_env = Environment(show=True)
-    fitness, c = creatures[0]
-    show_env.run(c)
 
 if __name__ == '__main__':
-    main()
+    #main()
+    show_best()
