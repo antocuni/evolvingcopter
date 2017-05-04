@@ -21,7 +21,7 @@ class Creature(object):
         self.reset()
 
     def __repr__(self):
-        return '<Creature id=%s, generation=%s>' % (self.id, self.generation)
+        return '<Creature id=%s>' % (self.id,)
 
     def reset(self):
         self.state = np.zeros(self.STATE_VARS + self.INPUTS)
@@ -36,27 +36,42 @@ class Creature(object):
         return outputs
 
     def reproduce(self):
-        """
-        What do we want?
-        We probably want two steps of evolution:
-
-          1. the first does the "fine tuning": so we adjust many/most/all the values
-             by a small amount (+/- 1%?)
-
-         2. the second does rare mutations: it might adjust 1 or 2 values by a larger amount
-            (+/- 20%?), but it occurs rarely
-        """
-        mu = 0
-        sigma = 0.2
+        mutate_meths = [self._mutate_normal,
+                        self._mutate_random,
+                        self._mutate_one,
+                        self._mutate_all]
+        mutate = random.choice(mutate_meths)
+        matrix = self.matrix
+        constant = self.constant
         if random.choice([True, False]):
-            # evolve the matrix
-            k = np.random.normal(mu, sigma, self.matrix.shape)
-            new_matrix = self.matrix + (self.matrix*k)
-            new_constant = self.constant
+            matrix = mutate(matrix)
         else:
-            # evolve the constant
-            new_matrix = self.matrix
-            k = np.random.normal(mu, sigma, self.constant.shape)
-            new_constant = self.constant + (self.constant*k)
-        #
-        return Creature(parent=self, matrix=new_matrix, constant=new_constant)
+            constant = mutate(constant)
+        return Creature(parent=self, matrix=matrix, constant=constant)
+
+    def _mutate_random(self, x):
+        # change every value of a random k between 50% and 150%
+        k = np.random.random(x.shape) + 0.5
+        return x*k
+
+    def _mutate_normal(self, x):
+        # like mutate_random, but with a normal distribution
+        mu = 0
+        sigma = 0.1
+        k = np.random.normal(mu, sigma, x.shape) + 0.5
+        return x*k
+        return self.matrix, new_constant
+
+    def _mutate_one(self, x):
+        # change only one item, between 50% and 150%
+        shape = x.shape
+        flat = x.flatten()
+        i = random.randrange(len(flat))
+        k = random.random() + 0.5
+        flat[i] *= k
+        return flat.reshape(shape)
+
+    def _mutate_all(self, x):
+        # change all the items by the same k
+        k = random.random() + 0.5
+        return x*k
