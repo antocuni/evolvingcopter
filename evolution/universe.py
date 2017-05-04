@@ -44,11 +44,11 @@ class Universe(object):
                 fitness = self.compute_fitness_one(c)
             values.append(fitness)
         #
-        min = np.min(values)
-        avg = np.average(values)
-        max = np.max(values)
+        vmin = min(values)
+        vavg = sum(values) / len(values)
+        vmax = max(values)
         #
-        print 'Generation %3d: min=%9.2f  avg=%9.2f   max=%9.2f' % (self.db.generation, min, avg, max)
+        print 'Generation %3d: min=%9.2f  avg=%9.2f   max=%9.2f' % (self.db.generation, vmin, vavg, vmax)
 
     def compute_fitness_one(self, c):
         fitness = self.env.run(c)

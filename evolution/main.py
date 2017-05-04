@@ -1,23 +1,21 @@
 import time
+import evolution.pypycompat
 from evolution.creature import Creature
 from evolution.environment import Environment
 from evolution.universe import Universe
+
 
 DB = 'creatures.db'
 
 def main():
     env = Environment(show=False)
     uni = Universe(DB, env, population=500)
-    try:
-        while True:
-            a = time.time()
-            uni.run_one_generation()
-            b = time.time()
-            print '   %.2f secs' % (b-a)
-            print
-    except KeyboardInterrupt:
-        import pdb;pdb.set_trace()
-
+    while True:
+        a = time.time()
+        uni.run_one_generation()
+        b = time.time()
+        print '   %.2f secs' % (b-a)
+        print
 
 
 def show_best():
@@ -29,5 +27,5 @@ def show_best():
 
 
 if __name__ == '__main__':
-    #main()
-    show_best()
+    main()
+    #show_best()

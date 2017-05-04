@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from model.quadcopter import Quadcopter
-from plotter.quadplotter import QuadPlotter, RED, GREEN
+#from plotter.quadplotter import QuadPlotter, RED, GREEN
 
 class Environment(object):
     """
