@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from model.quadcopter import Quadcopter
 from plotter.quadplotter import QuadPlotter, RED, GREEN
@@ -54,8 +55,7 @@ class Environment(object):
         # possible and then to stay there. So a measure of the fitness is the
         # distance to the target at every step (the goal is to *minimize* the
         # total value, of course)
-        target = [0, 0, z_setpoint]
-        position = np.array(quad.position)
-        distance = np.linalg.norm(target - position)
+        x0, y0, z0 = 0, 0, z_setpoint
+        x1, y1, z1 = quad.position
+        distance = math.sqrt((x0-x1)**2 + (y0-y1)**2 + (z0-z1)**2)
         return distance
-
