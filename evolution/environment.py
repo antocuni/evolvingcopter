@@ -13,24 +13,26 @@ class Environment(object):
     step
     """
 
-    def __init__(self, dt=0.01, show=False):
+    def __init__(self, dt=0.01, z1=5, z2=3, show=False):
         self.dt = dt
+        self.z1 = z1
+        self.z2 = z2
         self.show = show
         self.plotter = None
         if self.show:
             self.plotter = QuadPlotter()
-            self.plotter.add_marker((0, 0, 5), RED)
-            self.plotter.add_marker((0, 0, 3), GREEN)
+            self.plotter.add_marker((0, 0, z1), RED)
+            self.plotter.add_marker((0, 0, z2), GREEN)
 
     def run(self, creature):
         quad = Quadcopter()
         quad.position = (0, 0, 3)
-        z_setpoint = 5 # first task: go to setpoint (0, 0, 5)
+        z_setpoint = self.z1 # first task: go to setpoint (0, 0, z1)
         fitness = 0
         while quad.t < 4:
             if quad.t >= 2:
                 # switch to second task
-                z_setpoint = 2
+                z_setpoint = self.z2
             #
             inputs = [z_setpoint, quad.position.z]
             outputs = creature.run_step(inputs)
