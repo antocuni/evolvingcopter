@@ -6,7 +6,6 @@ from evolution.creature import Creature
 from evolution.environment import Environment
 from evolution.universe import Universe
 
-
 DB = 'creatures.db'
 
 def main():
@@ -26,7 +25,8 @@ def show_best():
     db = CreatureDB('creatures.db')
     c = db.load_best()
     c.reset()
-    show_env = Environment(show=True, z1=5, z2=8)
+    show_env = Environment(show=True, z1=5, z2=3)
+    #show_env = Environment(show=True, z1=5, z2=8)
     print show_env.run(c)
 
 
