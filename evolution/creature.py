@@ -47,7 +47,7 @@ class Creature(object):
             (+/- 20%?), but it occurs rarely
         """
         mu = 0
-        sigma = 0.1
+        sigma = 0.2
         if random.choice([True, False]):
             # evolve the matrix
             k = np.random.normal(mu, sigma, self.matrix.shape)
