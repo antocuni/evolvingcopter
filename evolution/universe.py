@@ -1,13 +1,15 @@
 import random
 import numpy as np
 from evolution.db import CreatureDB
+from evolution.fakedb import FakeDB
 from evolution.creature import Creature
 from evolution.environment import Environment
 
 class Universe(object):
 
     def __init__(self, filename, envs, population=500):
-        self.db = CreatureDB(filename)
+        #self.db = CreatureDB(filename)
+        self.db = FakeDB()
         self.envs = envs
         self.population = population
         self.alive = set()
@@ -100,4 +102,22 @@ class Universe(object):
         self.kill_some()
         self.db.new_generation()
         self.reproduce()
+
+    def save_best(self):
+        import cPickle as pickle
+        creatures = list(self.alive)
+        creatures.sort(key=self.db.get_fitness)
+        for c in creatures:
+            fitness = self.db.get_fitness(c)
+            if fitness is not None:
+                best = c
+                break
+        else:
+            print 'something is wrong'
+            import pdb;pdb.set_trace()
+        #
+        filename = 'creature-%d.pickle' % best.id
+        with open(filename, 'w') as f:
+            pickle.dump(best, f)
+        print 'best creature saved to', filename
 
