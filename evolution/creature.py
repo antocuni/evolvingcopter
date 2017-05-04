@@ -57,6 +57,6 @@ class Creature(object):
             # evolve the constant
             new_matrix = self.matrix
             k = np.random.normal(mu, sigma, self.constant.shape)
-            new_constant = self.constant * k
+            new_constant = self.constant + (self.constant*k)
         #
         return Creature(parent=self, matrix=new_matrix, constant=new_constant)
