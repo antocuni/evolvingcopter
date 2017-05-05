@@ -116,7 +116,7 @@ class Universe(object):
             print 'something is wrong'
             import pdb;pdb.set_trace()
         #
-        filename = 'creature-%d.pickle' % best.id
+        filename = 'creature-%.2f-%d.pickle' % (fitness, best.id)
         with open(filename, 'w') as f:
             pickle.dump(best, f)
         print 'best creature saved to', filename
