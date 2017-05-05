@@ -12,15 +12,21 @@ def main():
     envs = [Environment(z1=5, z2=3),
             Environment(z1=5, z2=8)]
     uni = Universe(DB, envs, population=500)
-    try:
-        while True:
+    while True:
+        try:
             a = time.time()
             uni.run_one_generation()
             b = time.time()
             print '   %.2f secs' % (b-a)
             print
-    finally:
-        uni.save_best()
+        except KeyboardInterrupt:
+            print 'Saving the best so far...'
+            uni.save_best()
+            print 'Press CTRL-C in the next 5 seconds to exit'
+            try:
+                time.sleep(5)
+            except KeyboardInterrupt:
+                break
 
 if __name__ == '__main__':
     main()
