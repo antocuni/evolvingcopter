@@ -22,9 +22,9 @@ def main():
         except KeyboardInterrupt:
             print 'Saving the best so far...'
             uni.save_best()
-            print 'Press CTRL-C in the next 5 seconds to exit'
+            print 'Press CTRL-C in the next 2 seconds to exit'
             try:
-                time.sleep(5)
+                time.sleep(2)
             except KeyboardInterrupt:
                 break
 

@@ -10,7 +10,8 @@ class Creature(object):
         N = self.INPUTS + self.STATE_VARS
         M = self.OUTPUTS + self.STATE_VARS
         self.id = None
-        self.parent = parent
+        # don't save the parent for now, else pickle.dump gives RecursionError
+        #self.parent = parent
         self.matrix = matrix
         self.constant = constant
         #
