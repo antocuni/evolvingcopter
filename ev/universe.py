@@ -1,9 +1,9 @@
 import random
 import numpy as np
-from evolution.db import CreatureDB
-from evolution.fakedb import FakeDB
-from evolution.creature import Creature
-from evolution.environment import Environment
+from ev.db import CreatureDB
+from ev.fakedb import FakeDB
+from ev.creature import Creature
+from ev.environment import Environment
 
 class Universe(object):
 

@@ -1,10 +1,10 @@
 import time
 import sys
 if hasattr(sys, 'pypy_version_info'):
-    import evolution.pypycompat
-from evolution.creature import Creature
-from evolution.environment import Environment
-from evolution.universe import Universe
+    import ev.pypycompat
+from ev.creature import Creature
+from ev.environment import Environment
+from ev.universe import Universe
 
 DB = 'creatures.db'
 

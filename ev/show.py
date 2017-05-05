@@ -1,7 +1,7 @@
 import sys
 if hasattr(sys, 'pypy_version_info'):
-    import evolution.pypycompat
-from evolution.environment import Environment
+    import ev.pypycompat
+from ev.environment import Environment
 
 
 def main():

@@ -1,7 +1,7 @@
 import pytest
 import random
 import itertools
-from evolution.universe import Universe
+from ev.universe import Universe
 
 @pytest.fixture
 def filename(tmpdir):
@@ -12,7 +12,7 @@ class FakeEnv(object):
         return c.id
 
 def test_first_generation(filename):
-    uni = Universe(filename, env=None, population=10)
+    uni = Universe(filename, envs=None, population=10)
     assert len(uni.alive) == 10
     ids = [c.id for c in uni.alive]
     assert sorted(ids) == range(1, 11)
@@ -21,7 +21,7 @@ def test_first_generation(filename):
 
 
 def test_compute_fitness(filename):
-    uni = Universe(filename, env=FakeEnv(), population=5)
+    uni = Universe(filename, envs=[FakeEnv()], population=5)
     uni.compute_fitness()
     #
     for c in uni.alive:
@@ -29,7 +29,7 @@ def test_compute_fitness(filename):
         assert fitness == c.id
 
 def test_compute_fitness_partial(filename):
-    uni = Universe(filename, env=FakeEnv(), population=5)
+    uni = Universe(filename, envs=[FakeEnv()], population=5)
     creatures = list(uni.alive)
     creatures.sort(key=lambda c: c.id)
     c1, c2, c3, c4, c5 = creatures
@@ -52,7 +52,7 @@ def test_kill_some(filename, monkeypatch):
         return population[:k]
     monkeypatch.setattr(random, 'sample', my_sample)
     #
-    uni = Universe(filename, env=FakeEnv(), population=100)
+    uni = Universe(filename, envs=[FakeEnv()], population=100)
     all_creatures = list(uni.alive)
     all_creatures.sort(key=lambda c: c.id)
     uni.compute_fitness() # c1 is the best, c100 is the worst

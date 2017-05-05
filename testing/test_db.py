@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from evolution.db import CreatureDB
+from ev.db import CreatureDB
 
 @pytest.fixture
 def db():
