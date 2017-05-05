@@ -22,22 +22,5 @@ def main():
     finally:
         uni.save_best()
 
-
-def show_best():
-    ## from evolution.db import CreatureDB
-    ## db = CreatureDB('creatures.db')
-    ## c = db.load_best()
-
-    import cPickle as pickle
-    filename = sys.argv[1]
-    with open(filename) as f:
-        c = pickle.load(f)
-    c.reset()
-    show_env = Environment(show=True, z1=5, z2=3)
-    #show_env = Environment(show=True, z1=5, z2=8)
-    print show_env.run(c)
-
-
 if __name__ == '__main__':
     main()
-    #show_best()
