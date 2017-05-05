@@ -72,8 +72,8 @@ class Universe(object):
         # 2. N creatures in the [10%:50%] are killed; the other survive
         # 3. N creatures in the [50%:100%] survives; the other are killed
         #
-        N = int(round(self.population * 0.05))
-        i10 = int(round(self.population * 0.1))
+        N = int(round(self.population * 0.15))   # 15% survives randomly
+        i10 = int(round(self.population * 0.01)) # save only the top 1%
         i50 = int(round(self.population * 0.5))
         best = set(creatures[:i10])
         good = set(creatures[i10:i50])
