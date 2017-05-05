@@ -32,4 +32,8 @@ class FakeDB(object):
         c.fitness = fitness
 
     def kill(self, c):
-        pass
+        c.killed = True
+
+    def is_alive(self, c):
+        killed = getattr(c, 'killed', False)
+        return not killed

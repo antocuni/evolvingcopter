@@ -39,7 +39,10 @@ def test_compute_fitness_partial(filename):
     uni.db.update_fitness(c2, 20)
     #
     computed = set()
-    uni.compute_fitness_one = computed.add
+    def compute_fitness_one(c):
+        computed.add(c)
+        return 1
+    uni.compute_fitness_one = compute_fitness_one
     uni.compute_fitness()
     assert computed == set([c3, c4, c5])
 
