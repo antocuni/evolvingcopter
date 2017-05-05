@@ -39,7 +39,8 @@ class Creature(object):
         mutate_meths = [self._mutate_normal,
                         self._mutate_random,
                         self._mutate_one,
-                        self._mutate_all]
+                        self._mutate_all,
+                        self._mutate_zero_or_one]
         mutate = random.choice(mutate_meths)
         matrix = self.matrix
         constant = self.constant
@@ -75,3 +76,11 @@ class Creature(object):
         # change all the items by the same k
         k = random.random() + 0.5
         return x*k
+
+    def _mutate_zero_or_one(self, x):
+        shape = x.shape
+        flat = x.flatten()
+        i = random.randrange(len(flat))
+        v = random.choice([0.0, 1.0])
+        flat[i] = v
+        return flat.reshape(shape)
