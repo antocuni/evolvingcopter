@@ -26,12 +26,14 @@ def main():
                        uni.last_max,
                        elapsed))
         except KeyboardInterrupt:
+            print
             print 'Saving the best so far...'
             uni.save_best()
             print 'Press CTRL-C in the next 2 seconds to exit'
             try:
                 time.sleep(2)
             except KeyboardInterrupt:
+                print
                 break
 
 if __name__ == '__main__':
