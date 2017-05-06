@@ -47,11 +47,9 @@ class Universe(object):
                 fitness = self.compute_fitness_one(c)
             values.append(fitness)
         #
-        vmin = min(values)
-        vavg = sum(values) / len(values)
-        vmax = max(values)
-        #
-        print 'Generation %3d: min=%9.2f  avg=%9.2f   max=%9.2f' % (self.db.generation, vmin, vavg, vmax)
+        self.last_min = min(values)
+        self.last_avg = sum(values) / len(values)
+        self.last_max = max(values)
 
     def compute_fitness_one(self, c):
         fitness = 0

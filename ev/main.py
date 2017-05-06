@@ -17,8 +17,14 @@ def main():
             a = time.time()
             uni.run_one_generation()
             b = time.time()
-            print '   %.2f secs' % (b-a)
-            print
+            elapsed = b-a
+            print ('Generation %3d: min =%9.2f avg =%9.2f '
+                   'max =%9.2f   [%.2f secs]' % (
+                       uni.db.generation,
+                       uni.last_min,
+                       uni.last_avg,
+                       uni.last_max,
+                       elapsed))
         except KeyboardInterrupt:
             print 'Saving the best so far...'
             uni.save_best()
