@@ -49,7 +49,7 @@ class Creature(object):
             matrix = mutate(matrix)
         else:
             constant = mutate(constant)
-        return Creature(parent=self, matrix=matrix, constant=constant)
+        return self.__class__(parent=self, matrix=matrix, constant=constant)
 
     def _mutate_random(self, x):
         # change every value of a random k between 50% and 150%
@@ -85,3 +85,44 @@ class Creature(object):
         v = random.choice([0.0, 1.0])
         flat[i] = v
         return flat.reshape(shape)
+
+
+class SpecializedCreature(Creature):
+    """
+    This is equivalent to Creature if:
+        INPUTS = 2
+        OUTPUTS = 1
+        STATE_VARS = 1
+
+    but it unrolls the dot() product, so it is much faster
+    """
+
+    def __init__(self, *args, **kwargs):
+        Creature.__init__(self, *args, **kwargs)
+        # store the data in a plain Python list, which pypy is able to
+        # optimize as a float array
+        self.data = list(self.matrix.ravel()) + list(self.constant)
+        self.data_state = [0.0]
+        assert self.matrix.shape == (2, 3)
+        assert len(self.data) == 8
+
+    def run_step(self, inputs):
+        # state: [state_vars ... inputs]
+        # out_values: [state_vars, ... outputs]
+        k0, k1, k2, q0, q1, q2, c0, c1 = self.data
+        s0 = self.data_state[0]
+        z_sp, z = inputs
+        #
+        # compute the output
+        out0 = s0*k0 + z_sp*k1 + z*k2 + c0
+        out1 = s0*q0 + z_sp*q1 + z*q2 + c1
+        #
+        self.data_state[0] = out0
+        outputs = [out1]
+        #
+        # sanity check
+        ## expected_outputs = Creature.run_step(self, inputs)
+        ## assert self.data_state[0] == self.state[0]
+        ## assert expected_outputs == outputs
+        #
+        return outputs

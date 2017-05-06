@@ -2,7 +2,7 @@ import random
 import numpy as np
 from ev.db import CreatureDB
 from ev.fakedb import FakeDB
-from ev.creature import Creature
+from ev.creature import Creature, SpecializedCreature
 from ev.environment import Environment
 
 class Universe(object):
@@ -23,7 +23,8 @@ class Universe(object):
         print 'Creating first generation'
         with self.db.atomic:
             for i in range(self.population):
-                c = Creature()
+                #c = Creature()
+                c = SpecializedCreature()
                 self.db.new(c)
                 self.alive.add(c)
 
