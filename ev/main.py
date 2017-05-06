@@ -8,10 +8,15 @@ from ev.universe import Universe
 DB = 'creatures.db'
 
 def main():
+    if len(sys.argv) == 2:
+        population = int(sys.argv[1])
+    else:
+        population = 500
+    #
     envs = [Environment(z1=5, z2=3),
             Environment(z1=5, z2=8),
             Environment(z1=10, z2=10)]
-    uni = Universe(DB, envs, population=500)
+    uni = Universe(DB, envs, population=population)
     while True:
         try:
             a = time.time()
@@ -19,11 +24,12 @@ def main():
             b = time.time()
             elapsed = b-a
             print ('Generation %3d: min =%9.2f avg =%9.2f '
-                   'max =%9.2f   [%.2f secs]' % (
+                   'max =%9.2f  [population = %d]  [%.2f secs]' % (
                        uni.db.generation,
                        uni.last_min,
                        uni.last_avg,
                        uni.last_max,
+                       len(uni.alive),
                        elapsed))
         except KeyboardInterrupt:
             print
