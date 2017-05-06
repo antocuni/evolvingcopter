@@ -9,7 +9,8 @@ DB = 'creatures.db'
 
 def main():
     envs = [Environment(z1=5, z2=3),
-            Environment(z1=5, z2=8)]
+            Environment(z1=5, z2=8),
+            Environment(z1=10, z2=10)]
     uni = Universe(DB, envs, population=500)
     while True:
         try:
