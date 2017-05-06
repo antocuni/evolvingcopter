@@ -1,6 +1,5 @@
 import sys
-if hasattr(sys, 'pypy_version_info'):
-    import ev.pypycompat
+import ev.pypycompat
 from ev.environment import Environment
 
 

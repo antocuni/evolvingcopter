@@ -1,7 +1,6 @@
 import time
 import sys
-if hasattr(sys, 'pypy_version_info'):
-    import ev.pypycompat
+import ev.pypycompat
 from ev.creature import Creature
 from ev.environment import Environment
 from ev.universe import Universe
