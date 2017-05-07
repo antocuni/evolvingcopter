@@ -33,7 +33,12 @@ else:
     class fake_numpypy(object):
 
         @staticmethod
-        def _reconstruct(self, shape, dtype):
+        def _reconstruct(t, shape, dtype):
             return numpy.empty(shape, dtype=dtype)
+
+        @staticmethod
+        def scalar(dtype, buf):
+            arr = numpy.frombuffer(buf, dtype=dtype)
+            return arr[0]
 
     sys.modules['_numpypy.multiarray'] = fake_numpypy
