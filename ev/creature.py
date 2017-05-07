@@ -88,6 +88,7 @@ class Creature(object):
         return flat.reshape(shape)
 
     def _mutate_set_equal_to(self, x):
+        shape = x.shape
         flat = x.flatten()
         i = random.randrange(len(flat))
         j = random.randrange(len(flat))
