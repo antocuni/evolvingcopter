@@ -41,7 +41,8 @@ class Creature(object):
                         self._mutate_random,
                         self._mutate_one,
                         self._mutate_all,
-                        self._mutate_zero_or_one]
+                        self._mutate_zero_or_one,
+                        self._mutate_set_equal_to]
         mutate = random.choice(mutate_meths)
         matrix = self.matrix
         constant = self.constant
@@ -84,6 +85,13 @@ class Creature(object):
         i = random.randrange(len(flat))
         v = random.choice([0.0, 1.0])
         flat[i] = v
+        return flat.reshape(shape)
+
+    def _mutate_set_equal_to(self, x):
+        flat = x.flatten()
+        i = random.randrange(len(flat))
+        j = random.randrange(len(flat))
+        flat[i] = flat[j]
         return flat.reshape(shape)
 
 
