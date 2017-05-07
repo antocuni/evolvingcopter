@@ -18,6 +18,7 @@ class Environment(object):
         self.z1 = z1
         self.z2 = z2
         self.show = show
+        self.prev_distance = float('-inf')
         self.plotter = None
         if self.show:
             from plotter.quadplotter import QuadPlotter, RED, GREEN
@@ -58,4 +59,8 @@ class Environment(object):
         x0, y0, z0 = 0, 0, z_setpoint
         x1, y1, z1 = quad.position
         distance = math.sqrt((x0-x1)**2 + (y0-y1)**2 + (z0-z1)**2)
-        return distance
+        k = 1
+        if distance > self.prev_distance:
+            k = 3 # if we are overshooting, pay a penalty
+        self.prev_distance = distance
+        return distance * k
