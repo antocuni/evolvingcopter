@@ -92,7 +92,8 @@ class Creature(object):
         flat = x.flatten()
         i = random.randrange(len(flat))
         j = random.randrange(len(flat))
-        flat[i] = flat[j]
+        sign = random.choice([1, -1])
+        flat[i] = flat[j] * sign
         return flat.reshape(shape)
 
 
