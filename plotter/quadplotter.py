@@ -38,6 +38,7 @@ class QuadPlotter(object):
     def _make_glview(self):
         self.glview = gl.GLViewWidget()
         self.glview.opts['distance'] = 40
+        #self.glview.pan(dx=0, dy=0, dz=100)
         self._make_grid()
         self._make_quad()
 

@@ -24,7 +24,7 @@ def main():
 
     #env = Environment(show=True, z1=5, z2=3)
     #env = Environment(show=True, z1=5, z2=8)
-    env = Environment(z0=3, z1=10, total_t=2, show=True)
+    env = Environment(z0=100+3, z1=100+10, total_t=4, show=True)
 
     fitness = env.run(c)
     print 'fitness:', fitness
