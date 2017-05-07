@@ -13,9 +13,13 @@ def main():
     else:
         population = 500
     #
-    envs = [Environment(z1=5, z2=3),
-            Environment(z1=5, z2=8),
-            Environment(z1=10, z2=10)]
+    # use envs in which z1-z0 is similar, but their absolute value is very
+    # different, to avoid too much hard-coding in the matrices
+    envs = [Environment(z0=3, z1=5),
+            Environment(z0=5, z1=3),
+            Environment(z0=100, z1=102),
+            Environment(z0=302, z1=300),
+            Environment(z0=50, z1=60, total_t=4)]
     uni = Universe(DB, envs, population=population)
     while True:
         try:
