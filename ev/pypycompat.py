@@ -1,6 +1,16 @@
 import sys
 IS_PYPY = hasattr(sys, 'pypy_version_info')
 if IS_PYPY:
+    if '--no-numpypy' in sys.argv:
+        print 'numpypy switched off by command line option'
+        USE_NUMPYPY = False
+    else:
+        USE_NUMPYPY = True
+else:
+    # CPython
+    USE_NUMPYPY = False
+
+if USE_NUMPYPY:
     # make sure that 'import numpy' imports _numpypy.multiarray
     import random
     import _numpypy
