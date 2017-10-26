@@ -7,11 +7,12 @@ from ev.environment import Environment
 
 class Universe(object):
 
-    def __init__(self, filename, envs, population=500):
+    def __init__(self, filename, envs, population=500, no_specialized=False):
         #self.db = CreatureDB(filename)
         self.db = FakeDB()
         self.envs = envs
         self.population = population
+        self.no_specialized = no_specialized
         self.alive = set()
         if self.db.count() == 0:
             # start from scratch
@@ -21,10 +22,15 @@ class Universe(object):
 
     def make_first_generation(self):
         print 'Creating first generation'
+        if self.no_specialized:
+            print 'WARNING: using the slow non-specialized creature'
+            make_creature = Creature
+        else:
+            make_creature = SpecializedCreature
+        #
         with self.db.atomic:
             for i in range(self.population):
-                #c = Creature()
-                c = SpecializedCreature()
+                c = make_creature()
                 self.db.new(c)
                 self.alive.add(c)
 
